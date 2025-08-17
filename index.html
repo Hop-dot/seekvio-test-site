@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DateCalc - Free Age & Date Calculator</title>
+  <meta name="description" content="Free Age & Date Calculator. Instantly calculate your age or find the precise difference between any two dates with our easy-to-use and privacy-first online tool." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Inter font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    
+    /* Apply Inter font to all elements */
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Define custom accent colors for light and dark modes */
+    .accent-rose { color: #EEAECA; }
+    .bg-accent-rose { background-color: #EEAECA; }
+    .border-accent-rose { border-color: #EEAECA; }
+    .hover-bg-accent-rose:hover { background-color: #EEAECA; }
+    .text-gray-950 .accent-rose { color: #F5DDE7; } /* Lighter for dark mode */
+
+    /* Transition classes for smooth theme changes */
+    .bg-white, .text-gray-800, .bg-gray-950, .text-gray-100, .bg-white\/80, .bg-gray-950\/80, .border-gray-200, .border-gray-800, .bg-gray-50, .bg-gray-900, .bg-white, .bg-gray-900, .bg-gray-100, .bg-gray-800 {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+    
+    /* ===== Custom Date Input Styling ===== */
+    .custom-date-input {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-color: #fff;
+      border: 1px solid #d1d5db; /* Tailwind gray-300 */
+      color: #374151; /* Tailwind gray-700 */
+      font-size: 0.95rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: 0.5rem;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease-in-out;
+    }
+    
+    .custom-date-input:hover { border-color: #EEAECA; }
+    .custom-date-input:focus {
+      border-color: #EEAECA;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(238, 174, 202, 0.25);
+    }
+    .dark .custom-date-input {
+      background-color: #1f2937;
+      border-color: #374151;
+      color: #f3f4f6;
+    }
+
+    /* Custom Gradient for Hero Section */
+    .hero-gradient {
+      background-color: #fff;
+      background-image: radial-gradient(at 0% 100%, #EEAECA 0, transparent 40%),
+                        radial-gradient(at 100% 0%, #D3A8E0 0, transparent 50%);
+    }
+    .dark .hero-gradient {
+      background-color: #0d0d10;
+      background-image: radial-gradient(at 0% 100%, #B8859A 0, transparent 40%),
+                        radial-gradient(at 100% 0%, #85699A 0, transparent 50%);
+    }
+    
+    /* Custom date picker dropdown styling */
+    .date-picker-dropdown {
+      position: absolute;
+      z-index: 10;
+      width: 100%;
+      max-width: 320px;
+      margin-top: 0.5rem;
+      border-radius: 1rem;
+      border: 1px solid #e5e7eb;
+      background-color: #fff;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      padding: 1rem;
+      display: none;
+    }
+    .dark .date-picker-dropdown {
+      border-color: #374151;
+      background-color: #1f2937;
+    }
+    .date-picker-dropdown .bg-accent { background-color: #EEAECA; }
+    .date-picker-dropdown .border-accent { border-color: #EEAECA; }
+    .dark .date-picker-dropdown .text-accent { color: #F5DDE7; }
+    
+    /* FAQ dropdown styling */
+    .faq-item .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out;
+    }
+    .faq-item.active .faq-answer {
+      max-height: 500px; /* Large enough to accommodate content */
+    }
+    .faq-item .faq-question {
+      transition: color 0.3s ease;
+    }
+    .faq-item.active .faq-question {
+      color: #EEAECA;
+    }
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+    }
+    
+    /* Mobile dropdown menu styles */
+    #mobile-nav {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    #mobile-nav.open {
+      max-height: 500px; /* Adjust to a value larger than the menu's height */
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-800 dark:bg-gray-950 dark:text-gray-100 transition-colors">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+    <div class="max-w-6xl mx-auto px-4 py-3">
+      <!-- Top Row: Logo, Desktop Nav, and Mobile Toggles -->
+      <div class="flex items-center justify-between">
+        <a href="javascript:void(0)" onclick="setPage('home')" class="flex items-center gap-2 z-50">
+          <span class="inline-flex h-8 w-8 rounded-xl bg-accent-rose"></span>
+          <span class="font-extrabold text-xl tracking-tight">DateCalc</span>
+        </a>
+        
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center gap-6">
+          <button onclick="setPage('home')" class="hover:text-accent-rose transition">Home</button>
+          <a href="blog.html" class="hover:text-accent-rose transition">Blog</a>
+          <button onclick="setPage('about')" class="hover:text-accent-rose transition">About</button>
+          <button onclick="setPage('contact')" class="hover:text-accent-rose transition">Contact</button>
+          <button onclick="setPage('privacy')" class="hover:text-accent-rose transition">Privacy</button>
+          <button onclick="setPage('terms')" class="hover:text-accent-rose transition">Terms</button>
+        </nav>
+        
+        <!-- Theme Toggle & Mobile Menu Toggles -->
+        <div class="flex items-center gap-4">
+          <button onclick="toggleTheme()" 
+                  class="hidden md:block px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
+                         bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 
+                         hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+            🌙 Dark Mode
+          </button>
+          <button onclick="toggleTheme()" class="md:hidden p-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-star"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><path d="M17.5 17.5 19 19"/><path d="m14 20 1-2"/><path d="m11.5 21.5 1-2"/><path d="M16 21s2-1 2-2"/></svg>
+          </button>
+          <button onclick="toggleMobileMenu()" class="md:hidden text-gray-700 dark:text-gray-200 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Dropdown Navigation -->
+      <nav id="mobile-nav" class="md:hidden mt-4">
+        <ul class="flex flex-col gap-2 font-medium">
+          <li><button onclick="setPage('home'); toggleMobileMenu()" class="w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">Home</button></li>
+          <li><a href="blog.html" class="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">Blog</a></li>
+          <li><button onclick="setPage('about'); toggleMobileMenu()" class="w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">About</button></li>
+          <li><button onclick="setPage('contact'); toggleMobileMenu()" class="w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">Contact</button></li>
+          <li><button onclick="setPage('privacy'); toggleMobileMenu()" class="w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">Privacy</button></li>
+          <li><button onclick="setPage('terms'); toggleMobileMenu()" class="w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">Terms</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Area with Pages -->
+  <main class="min-h-screen">
+    
+    <!-- Home Page -->
+    <div id="page-home">
+      <!-- Hero -->
+      <section class="max-w-6xl mx-auto px-4 py-10 md:py-16 hero-gradient rounded-b-3xl">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">
+            Age & Date <span class="accent-rose">Calculator</span>
+          </h1>
+          <p class="mt-4 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Calculate your exact age in years, months & days—or find the precise difference between any two dates.
+          </p>
+        </div>
+      </section>
+
+      <!-- Tool -->
+      <section id="tool" class="max-w-6xl mx-auto px-4 pb-16 pt-16">
+        <!-- Tabs -->
+        <div class="mx-auto max-w-3xl mb-6 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-1 flex">
+          <button id="tabAge" class="flex-1 px-4 py-3 rounded-lg font-medium bg-accent-rose text-white"
+                  onclick="setTab('age')">Age Calculator</button>
+          <button id="tabDiff" class="flex-1 px-4 py-3 rounded-lg font-medium text-gray-700 dark:text-gray-200 hover:bg-white dark:hover:bg-gray-800"
+                  onclick="setTab('diff')">Date Difference</button>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Age Card -->
+          <div id="cardAge" class="md:col-span-2 grid md:grid-cols-2 gap-6">
+            <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm relative">
+              <h3 class="text-xl font-semibold mb-4">Age Calculator</h3>
+              <label class="text-sm mb-2 block">Date of Birth</label>
+              <!-- Custom date input field -->
+              <div id="dobInput" class="custom-date-input" onclick="toggleDatePicker('dob')">
+                <span id="dobValue">Select Date...</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar text-gray-500"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <input type="hidden" id="dob" />
+              
+              <!-- Date Picker Dropdown -->
+              <div id="dobPicker" class="date-picker-dropdown">
+                <div id="dobCalendar" class="relative"></div>
+              </div>
+              
+              <button onclick="calculateAge()"
+                      class="mt-4 w-full rounded-lg bg-accent-rose text-white font-medium py-2.5 hover-bg-accent-rose active:scale-[.99] transition">
+                Calculate Age
+              </button>
+              <p class="text-xs text-gray-500 mt-2">We don’t store your data. Everything runs in your browser.</p>
+            </div>
+
+            <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+              <h4 class="text-lg font-semibold mb-3">Result</h4>
+              <div id="ageResult" class="rounded-xl bg-gray-50 dark:bg-gray-800 p-4 text-sm leading-relaxed min-h-[120px] flex items-center justify-center text-gray-600 dark:text-gray-300">
+                Enter your date of birth and tap “Calculate”.
+              </div>
+            </div>
+          </div>
+
+          <!-- Diff Card -->
+          <div id="cardDiff" class="md:col-span-2 grid md:grid-cols-2 gap-6 hidden">
+            <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm relative">
+              <h3 class="text-xl font-semibold mb-4">Date Difference Calculator</h3>
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="text-sm mb-2 block">Start Date</label>
+                  <!-- Custom date input field -->
+                  <div id="date1Input" class="custom-date-input" onclick="toggleDatePicker('date1')">
+                    <span id="date1Value">Select Date...</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar text-gray-500"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  </div>
+                  <input type="hidden" id="date1" />
+                </div>
+                <div>
+                  <label class="text-sm mb-2 block">End Date</label>
+                  <!-- Custom date input field -->
+                  <div id="date2Input" class="custom-date-input" onclick="toggleDatePicker('date2')">
+                    <span id="date2Value">Select Date...</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar text-gray-500"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  </div>
+                  <input type="hidden" id="date2" />
+                </div>
+              </div>
+              <!-- Date Picker Dropdown -->
+              <div id="date1Picker" class="date-picker-dropdown">
+                <div id="date1Calendar" class="relative"></div>
+              </div>
+              <div id="date2Picker" class="date-picker-dropdown">
+                <div id="date2Calendar" class="relative"></div>
+              </div>
+              
+              <button onclick="calculateDifference()"
+                      class="mt-4 w-full rounded-lg bg-accent-rose text-white font-medium py-2.5 hover-bg-accent-rose active:scale-[.99] transition">
+                Calculate Difference
+              </button>
+              <p class="text-xs text-gray-500 mt-2">Tip: You can pick past or future dates; we’ll do the math.</p>
+            </div>
+
+            <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+              <h4 class="text-lg font-semibold mb-3">Result</h4>
+              <div id="diffResult" class="rounded-xl bg-gray-50 dark:bg-gray-800 p-4 text-sm leading-relaxed min-h-[120px] flex items-center justify-center text-gray-600 dark:text-gray-300">
+                Select two dates and tap “Calculate”.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- About & Features Sections -->
+      <section class="max-w-6xl mx-auto px-4 py-16">
+        <div class="mx-auto max-w-4xl prose prose-gray dark:prose-invert">
+          <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 dark:text-gray-100">
+            What is DateCalc?
+          </h2>
+          <p>
+            <strong>DateCalc</strong> is your go-to online tool for all things related to dates. Whether you need to find out how old you are, plan a project, or simply know the number of days between two important events, our calculator provides instant and accurate results. Our mission is to make complex date calculations effortless for everyone, from students to professionals.
+          </p>
+          <h3 class="text-xl font-semibold mt-8 mb-2">Age Calculator</h3>
+          <p>
+            The Age Calculator lets you quickly determine your exact age in years, months, and days from your date of birth. It's a fun and practical way to see exactly how long you've been on the planet. Just enter your birthdate, and we'll do the rest!
+          </p>
+          <h3 class="text-xl font-semibold mt-8 mb-2">Date Difference Calculator</h3>
+          <p>
+            The Date Difference Calculator is a versatile tool that allows you to calculate the number of days, weeks, months, and years between any two dates. It's perfect for counting down to a special occasion, tracking project timelines, or simply satisfying your curiosity.
+          </p>
+          <p>
+            Our tool is designed with a focus on simplicity and accuracy. The best part? It's completely free and privacy-focused, with all calculations happening securely in your browser.
+          </p>
+        </div>
+      </section>
+
+      <section class="bg-gray-50 dark:bg-gray-900 py-16 border-t border-b border-gray-200 dark:border-gray-800">
+        <div class="max-w-6xl mx-auto px-4">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 dark:text-gray-100">
+              Why Choose <span class="accent-rose">DateCalc?</span>
+            </h2>
+            <p class="mt-3 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Powerful features designed to make date calculations simple, accurate, and accessible for everyone.
+            </p>
+          </div>
+
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <!-- Feature 1 -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow hover:shadow-md transition">
+              <div class="accent-rose text-3xl mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ruler"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.4 2.4a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.4-2.4a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.9 9.9 2-2"/><path d="m9.3 7.3 2-2"/><path d="m6.7 4.7 2-2"/></svg>
+              </div>
+              <h3 class="text-lg font-semibold mb-2">Precise Calculations</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                Get exact results down to the day with our advanced date calculation algorithms.
+              </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow hover:shadow-md transition">
+              <div class="accent-rose text-3xl mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap"><path d="M4 14a1 1 0 0 1-.48-1.39l.66-1.12"/><path d="M12 2v10a1 1 0 0 1-1.39.48l-1.12.66"/><path d="M10 14h6"/><path d="M20 10a1 1 0 0 1 .48 1.39l-2.66 4.54a1 1 0 0 1-1.39-.48l-1.12-.66"/><path d="M12 14v8a1 1 0 0 1-.48 1.39l-.66 1.12"/><path d="M4 10h6"/><path d="M10 10h4"/><path d="M14 10h6"/></svg>
+              </div>
+              <h3 class="text-lg font-semibold mb-2">Instant Results</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                No waiting, no loading. Get your date calculations instantly as you type.
+              </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow hover:shadow-md transition">
+              <div class="accent-rose text-3xl mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+              </div>
+              <h3 class="text-lg font-semibold mb-2">Multiple Formats</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                View results in years, months, days, and total days for complete flexibility.
+              </p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow hover:shadow-md transition">
+              <div class="accent-rose text-3xl mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe-2"><path d="M12 2a8 8 0 1 0 8 8"/><path d="M12 2a8 8 0 1 0-8 8"/><path d="M22 17a10 10 0 0 1-10 0"/><path d="M22 10a10 10 0 0 1-10 0"/><path d="M12 2a10 10 0 0 1 0 20"/><path d="M12 2a10 10 0 0 0 0 20"/></svg>
+              </div>
+              <h3 class="text-lg font-semibold mb-2">Works Everywhere</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                Access from any device, anywhere. No downloads or installations required.
+              </p>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow hover:shadow-md transition">
+              <div class="accent-rose text-3xl mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check"><path d="M20.2 6.7c-.5-.4-1.2-.7-1.7-.8"/><path d="M14 20c-1-.2-2-.5-3-.8"/><path d="M9.9 20.6c-.3-.1-.6-.2-.9-.3"/><path d="M11 2a2 2 0 0 1-2 2H5a2 2 0 0 0-2 2v3.8c0 2.2 1.4 4.4 3.6 5.6C7.4 16 8.5 16.5 12 19c3.5-2.5 4.6-3 6.4-4.2 2.2-1.2 3.6-3.4 3.6-5.6V6a2 2 0 0 0-2-2h-4a2 2 0 0 1-2-2z"/><path d="M9 12l2 2 4-4"/></svg>
+              </div>
+              <h3 class="text-lg font-semibold mb-2">Privacy First</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                All calculations happen in your browser. We don't store your personal dates.
+              </p>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow hover:shadow-md transition">
+              <div class="accent-rose text-3xl mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              </div>
+              <h3 class="text-lg font-semibold mb-2">Always Available</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                24/7 access to our date calculation tools whenever you need them.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works Section -->
+      <section id="how-it-works" class="max-w-6xl mx-auto px-4 py-16 bg-white dark:bg-gray-950">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 dark:text-gray-100">
+            How It <span class="accent-rose">Works</span>
+          </h2>
+          <p class="mt-3 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            A simple, three-step process to get your date calculations.
+          </p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-12">
+          <!-- Step 1 -->
+          <div class="flex flex-col items-center text-center">
+            <div class="w-16 h-16 rounded-full bg-accent-rose flex items-center justify-center mb-4 text-white font-bold text-2xl">1</div>
+            <h3 class="font-bold text-xl mb-2">Select a Tool</h3>
+            <p class="text-gray-600 dark:text-gray-300">Choose between the Age Calculator or the Date Difference tool.</p>
+          </div>
+          <!-- Step 2 -->
+          <div class="flex flex-col items-center text-center">
+            <div class="w-16 h-16 rounded-full bg-accent-rose flex items-center justify-center mb-4 text-white font-bold text-2xl">2</div>
+            <h3 class="font-bold text-xl mb-2">Enter Your Dates</h3>
+            <p class="text-gray-600 dark:text-gray-300">Input the dates you want to use for the calculation.</p>
+          </div>
+          <!-- Step 3 -->
+          <div class="flex flex-col items-center text-center">
+            <div class="w-16 h-16 rounded-full bg-accent-rose flex items-center justify-center mb-4 text-white font-bold text-2xl">3</div>
+            <h3 class="font-bold text-xl mb-2">See the Result</h3>
+            <p class="text-gray-600 dark:text-gray-300">Get an instant, precise result in an easy-to-read format.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Perfect for Every Occasion Section -->
+      <section class="bg-gray-50 dark:bg-gray-900 py-16 border-t border-b border-gray-200 dark:border-gray-800">
+        <div class="max-w-6xl mx-auto px-4">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 dark:text-gray-100">
+              Perfect for Every <span class="accent-rose">Occasion</span>
+            </h2>
+            <p class="mt-3 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              From planning events to tracking milestones, DateCalc is the perfect tool.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Occasion 1 -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow">
+              <div class="bg-gray-100 dark:bg-gray-700 h-32 rounded-xl mb-4"></div>
+              <h3 class="font-semibold text-lg">Birthdays & Anniversaries</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                Calculate a friend's exact age or see how long you've been married.
+              </p>
+            </div>
+            <!-- Occasion 2 -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow">
+              <div class="bg-gray-100 dark:bg-gray-700 h-32 rounded-xl mb-4"></div>
+              <h3 class="font-semibold text-lg">Project Deadlines</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                Quickly find the number of days until your next big project is due.
+              </p>
+            </div>
+            <!-- Occasion 3 -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow">
+              <div class="bg-gray-100 dark:bg-gray-700 h-32 rounded-xl mb-4"></div>
+              <h3 class="font-semibold text-lg">Travel Planning</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                Count down the days until your next vacation or a business trip.
+              </p>
+            </div>
+            <!-- Occasion 4 -->
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow">
+              <div class="bg-gray-100 dark:bg-gray-700 h-32 rounded-xl mb-4"></div>
+              <h3 class="font-semibold text-lg">Financial Planning</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                Determine the duration of a loan or investment period with ease.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Frequently Asked Questions (FAQ) Section -->
+      <section id="faq" class="max-w-6xl mx-auto px-4 py-16 bg-white dark:bg-gray-950">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 dark:text-gray-100">
+            Frequently Asked <span class="accent-rose">Questions</span>
+          </h2>
+          <p class="mt-3 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Have a question? We've got you covered.
+          </p>
+        </div>
+        <div class="max-w-4xl mx-auto">
+          <!-- FAQ Item 1 -->
+          <div class="faq-item rounded-xl border border-gray-200 dark:border-gray-800 mb-4 overflow-hidden">
+            <button class="faq-question w-full text-left p-6 font-semibold text-lg focus:outline-none flex justify-between items-center" onclick="toggleFaq(this)">
+              <span>How accurate is the Age & Date Calculator?</span>
+              <svg class="w-5 h-5 transition-transform duration-300 faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div class="faq-answer p-6 pt-0 text-gray-600 dark:text-gray-300">
+              <p>Our calculator is highly accurate and uses precise date algorithms to give you the exact number of years, months, and days between any two dates, taking into account leap years.</p>
+            </div>
+          </div>
+          <!-- FAQ Item 2 -->
+          <div class="faq-item rounded-xl border border-gray-200 dark:border-gray-800 mb-4 overflow-hidden">
+            <button class="faq-question w-full text-left p-6 font-semibold text-lg focus:outline-none flex justify-between items-center" onclick="toggleFaq(this)">
+              <span>Is my data safe and private?</span>
+              <svg class="w-5 h-5 transition-transform duration-300 faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div class="faq-answer p-6 pt-0 text-gray-600 dark:text-gray-300">
+              <p>Yes, your data is completely safe. The calculator runs entirely within your web browser, which means none of the dates you enter are ever sent to our servers. Your information remains private and secure on your device.</p>
+            </div>
+          </div>
+          <!-- FAQ Item 3 -->
+          <div class="faq-item rounded-xl border border-gray-200 dark:border-gray-800 mb-4 overflow-hidden">
+            <button class="faq-question w-full text-left p-6 font-semibold text-lg focus:outline-none flex justify-between items-center" onclick="toggleFaq(this)">
+              <span>Can I use this for future dates?</span>
+              <svg class="w-5 h-5 transition-transform duration-300 faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div class="faq-answer p-6 pt-0 text-gray-600 dark:text-gray-300">
+              <p>Absolutely. The Date Difference Calculator is designed to work for both past and future dates, allowing you to calculate the time between any two dates, regardless of whether they are in the past or the future.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- About Us Page -->
+    <div id="page-about" class="hidden max-w-6xl mx-auto px-4 py-16">
+      <div class="prose prose-lg dark:prose-invert mx-auto">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 dark:text-gray-100 mb-6">About Us</h1>
+        <p><strong>DateCalc</strong> is a free, privacy-first tool designed to simplify age and date calculations. Our mission is to provide you with a fast, accurate, and easy-to-use calculator that works right in your browser.</p>
+        <p>We believe that getting accurate date information should be a seamless experience for everyone, regardless of technical skill. Our calculator is built with a clean, intuitive interface that guides you through the process, providing instant results without any hassle. We are committed to your privacy, ensuring that none of your data ever leaves your device.</p>
+        <h2 class="text-2xl font-bold mt-8 mb-4">Our Commitment</h2>
+        <ul>
+          <li><strong>Accuracy:</strong> We use precise date algorithms to ensure your calculations are always correct.</li>
+          <li><strong>Simplicity:</strong> Our design is clean and straightforward, making it easy to get what you need done quickly.</li>
+          <li><strong>Privacy:</strong> All calculations are performed locally in your browser. We never collect or store your personal data.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Contact Page -->
+    <div id="page-contact" class="hidden max-w-6xl mx-auto px-4 py-16">
+      <div class="prose prose-lg dark:prose-invert mx-auto">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 dark:text-gray-100 mb-6">Contact Us</h1>
+        <p>We'd love to hear from you! If you have any questions, suggestions, or feedback, please feel free to reach out to us. We are always looking for ways to improve DateCalc and your input is invaluable.</p>
+        <div class="my-6 p-6 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+          <h2 class="text-xl font-bold mb-2">Email</h2>
+          <p>For general inquiries, support, or feedback, you can reach us at:</p>
+          <a class="text-accent-rose hover:underline font-bold" href="mailto:support@datecalc.example">support@datecalc.example</a>
+        </div>
+        <p>We aim to respond to all inquiries promptly. Thank you for your interest in DateCalc!</p>
+      </div>
+    </div>
+
+    <!-- Privacy Policy Page -->
+    <div id="page-privacy" class="hidden max-w-6xl mx-auto px-4 py-16">
+      <div class="prose prose-lg dark:prose-invert mx-auto">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 dark:text-gray-100 mb-6">Privacy Policy</h1>
+        <p>Your privacy is our top priority. This policy outlines how DateCalc handles your data.</p>
+        <h2 class="text-2xl font-bold mt-8 mb-4">Data We Do Not Collect</h2>
+        <p>We do not collect, store, or share any of the following information:</p>
+        <ul>
+          <li>Personal information (like your name or email address)</li>
+          <li>The dates you enter into the calculator</li>
+          <li>Your IP address or location data</li>
+        </ul>
+        <h2 class="text-2xl font-bold mt-8 mb-4">On-Device Calculation</h2>
+        <p>All calculations performed by DateCalc happen locally in your web browser. This means that when you input a date, the computation is done on your device, and the data never leaves your computer. This ensures that your information remains private and secure.</p>
+        <h2 class="text-2xl font-bold mt-8 mb-4">Cookies</h2>
+        <p>We use a single, temporary cookie to remember your dark mode preference. This cookie is not tied to any personal data and is solely for enhancing your user experience. When you close your browser, the cookie will expire.</p>
+      </div>
+    </div>
+
+    <!-- Terms of Service Page -->
+    <div id="page-terms" class="hidden max-w-6xl mx-auto px-4 py-16">
+      <div class="prose prose-lg dark:prose-invert mx-auto">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 dark:text-gray-100 mb-6">Terms of Service</h1>
+        <p>By accessing and using DateCalc, you agree to these terms of service. Please read them carefully.</p>
+        <h2 class="text-2xl font-bold mt-8 mb-4">Use of the Service</h2>
+        <p>The tools and information provided on this site are for general informational and recreational purposes only. They are provided "as is" without any warranties. This site is not intended for professional, legal, or financial use.</p>
+        <h2 class="text-2xl font-bold mt-8 mb-4">Accuracy of Results</h2>
+        <p>While we strive for 100% accuracy, there may be edge cases or browser-specific issues. We do not guarantee the results for any mission-critical applications. By using this tool, you accept full responsibility for your reliance on its results.</p>
+        <h2 class="text-2xl font-bold mt-8 mb-4">Limitation of Liability</h2>
+        <p>We are not liable for any damages or issues arising from the use or inability to use this tool. Your use of this service is at your sole risk.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-50 dark:bg-gray-900 py-12 border-t border-gray-200 dark:border-gray-800">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <!-- Column 1: DateCalc -->
+        <div>
+          <h4 class="font-extrabold text-xl tracking-tight mb-2">DateCalc</h4>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Simple, accurate date calculations for everyone.</p>
+        </div>
+        <!-- Column 2: Tools -->
+        <div>
+          <h4 class="font-semibold mb-3">Tools</h4>
+          <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            <li><button onclick="setPage('home'); setTab('diff')" class="hover:text-accent-rose transition">Date Difference Calculator</button></li>
+            <li><button onclick="setPage('home'); setTab('age')" class="hover:text-accent-rose transition">Age Calculator</button></li>
+          </ul>
+        </div>
+        <!-- Column 3: Company -->
+        <div>
+          <h4 class="font-semibold mb-3">Company</h4>
+          <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            <li><button onclick="setPage('about')" class="hover:text-accent-rose transition">About Us</button></li>
+            <li><button onclick="setPage('contact')" class="hover:text-accent-rose transition">Contact</button></li>
+          </ul>
+        </div>
+        <!-- Column 4: Legal -->
+        <div>
+          <h4 class="font-semibold mb-3">Legal</h4>
+          <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            <li><button onclick="setPage('terms')" class="hover:text-accent-rose transition">Terms of Service</button></li>
+            <li><button onclick="setPage('privacy')" class="hover:text-accent-rose transition">Privacy Policy</button></li>
+          </ul>
+        </div>
+      </div>
+      <!-- Bottom row with social links -->
+      <div class="flex flex-col sm:flex-row justify-between items-center pt-8 border-t border-gray-200 dark:border-gray-800">
+        <p class="text-sm text-gray-600 dark:text-gray-400">&copy; <span id="year"></span> DateCalc. All rights reserved.</p>
+        <div class="flex items-center gap-4 mt-4 sm:mt-0">
+          <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-accent-rose transition">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-twitter"><path d="M22 4s-.7 2.1-2 3.4c-.9 1-2.4 1.4-4 1.4c-1.6 0-3.1-.4-4.5-1.4C9.5 7.1 8.8 5 8.1 4S6.6 2.6 5 2.6c-1.6 0-3.1.4-4.5 1.4S-.1 5 0 6.6c.7 1.4 1.2 2.8 1.4 4.5S2.6 12 4.2 12c1.6 0 3.1-.4 4.5-1.4S9.5 8.9 11 8.9c1.6 0 3.1.4 4.5 1.4S15.6 12 17.2 12c1.6 0 3.1-.4 4.5-1.4S22.1 8.9 22 7.3s-.7-2.1-2-3.4c-.9-1-2.4-1.4-4-1.4c-1.6 0-3.1.4-4.5 1.4S9.5 7.1 8.1 7.1c-1.4 0-2.9.4-4.2 1.2M22 4L8.1 7.1"/><path d="M22 4L8.1 7.1"/></svg>
+          </a>
+          <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-accent-rose transition">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-accent-rose transition">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Utilities =====
+    const $ = (id) => document.getElementById(id);
+    const pad = (n) => String(n).padStart(2, "0");
+    $('year').textContent = new Date().getFullYear();
+
+    // ===== Page Switching Logic =====
+    function setPage(pageName) {
+      const pages = ['home', 'about', 'contact', 'privacy', 'terms'];
+      pages.forEach(page => {
+        const element = $(`page-${page}`);
+        if (element) {
+          element.classList.toggle('hidden', page !== pageName);
+        }
+      });
+      // Scroll to the top of the new page
+      window.scrollTo(0, 0);
+    }
+    // Set the initial page to 'home' on load
+    setPage('home');
+
+    // ===== Theme Toggling =====
+    function toggleTheme() {
+      const isDarkMode = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+      updateThemeButton(isDarkMode);
+    }
+    
+    function updateThemeButton(isDarkMode) {
+      const themeBtn = document.querySelector('[onclick="toggleTheme()"]');
+      if (themeBtn) {
+        themeBtn.innerHTML = isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode';
+      }
+    }
+
+    (function () {
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      let initialThemeIsDark = false;
+      if (savedTheme === 'dark') {
+        initialThemeIsDark = true;
+      } else if (savedTheme === 'light') {
+        initialThemeIsDark = false;
+      } else {
+        initialThemeIsDark = prefersDark;
+      }
+      
+      if (initialThemeIsDark) {
+        document.documentElement.classList.add('dark');
+      }
+      updateThemeButton(initialThemeIsDark);
+    })();
+    
+    // ===== Mobile Menu Toggling =====
+    function toggleMobileMenu() {
+      const navMenu = $('mobile-nav');
+      navMenu.classList.toggle('open');
+    }
+
+    // ===== Tabs (for home page) =====
+    function setTab(which) {
+      const isAge = which === 'age';
+      $('cardAge').classList.toggle('hidden', !isAge);
+      $('cardDiff').classList.toggle('hidden', isAge);
+      
+      const tabAge = $('tabAge');
+      const tabDiff = $('tabDiff');
+      
+      tabAge.classList.toggle('bg-accent-rose', isAge);
+      tabAge.classList.toggle('text-white', isAge);
+      tabAge.classList.toggle('bg-gray-50', !isAge);
+      tabAge.classList.toggle('dark:bg-gray-900', !isAge);
+      tabAge.classList.toggle('text-gray-700', !isAge);
+      tabAge.classList.toggle('dark:text-gray-200', !isAge);
+
+      tabDiff.classList.toggle('bg-accent-rose', !isAge);
+      tabDiff.classList.toggle('text-white', !isAge);
+      tabDiff.classList.toggle('bg-gray-50', isAge);
+      tabDiff.classList.toggle('dark:bg-gray-900', isAge);
+      tabDiff.classList.toggle('text-gray-700', isAge);
+      tabDiff.classList.toggle('dark:text-gray-200', isAge);
+    }
+    // Initialize tab on load
+    setTab('age');
+
+    // ===== Date Picker Logic =====
+    let activePickerId = null;
+    let selectedDate = new Date();
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const inputToPickerId = {
+      'dob': 'dobPicker',
+      'date1': 'date1Picker',
+      'date2': 'date2Picker'
+    };
+
+    function toggleDatePicker(inputId) {
+      const pickerId = inputToPickerId[inputId];
+      const picker = $(pickerId);
+      
+      // Close any other open pickers
+      for (const key in inputToPickerId) {
+        if (key !== inputId) {
+          $(inputToPickerId[key]).style.display = 'none';
+        }
+      }
+
+      if (picker.style.display === 'block') {
+        picker.style.display = 'none';
+        activePickerId = null;
+      } else {
+        activePickerId = pickerId;
+        const hiddenInput = $(inputId);
+        if (hiddenInput.value) {
+          selectedDate = new Date(hiddenInput.value);
+        } else {
+          selectedDate = new Date();
+        }
+        renderCalendar(pickerId);
+        picker.style.display = 'block';
+      }
+    }
+
+    // Close picker when clicking outside
+    document.addEventListener('click', (e) => {
+      const picker = activePickerId ? $(activePickerId) : null;
+      const input = activePickerId ? $(activePickerId.replace('Picker', 'Input')) : null;
+      
+      if (picker && !picker.contains(e.target) && input && !input.contains(e.target)) {
+        picker.style.display = 'none';
+        activePickerId = null;
+      }
+    });
+
+    function renderCalendar(pickerId) {
+      const year = selectedDate.getFullYear();
+      const month = selectedDate.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonthCount = lastDay.getDate();
+      const startingDay = firstDay.getDay();
+      
+      let html = `<div class="flex items-center justify-between mb-2">
+                    <button onclick="changeMonth(-1, '${pickerId}')" class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <div class="font-semibold text-base">${monthNames[month]} ${year}</div>
+                    <button onclick="changeMonth(1, '${pickerId}')" class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
+                  </div>
+                  <div class="grid grid-cols-7 text-center text-sm">
+                    <div class="text-xs font-semibold text-gray-400 py-2">S</div>
+                    <div class="text-xs font-semibold text-gray-400 py-2">M</div>
+                    <div class="text-xs font-semibold text-gray-400 py-2">T</div>
+                    <div class="text-xs font-semibold text-gray-400 py-2">W</div>
+                    <div class="text-xs font-semibold text-gray-400 py-2">T</div>
+                    <div class="text-xs font-semibold text-gray-400 py-2">F</div>
+                    <div class="text-xs font-semibold text-gray-400 py-2">S</div>`;
+
+      for (let i = 0; i < startingDay; i++) {
+        html += `<div class="p-2"></div>`;
+      }
+
+      for (let day = 1; day <= daysInMonthCount; day++) {
+        const selectedValue = $(pickerId.replace('Picker', '')).value;
+        const isSelected = selectedValue && new Date(selectedValue + 'T00:00:00').getDate() === day && new Date(selectedValue + 'T00:00:00').getMonth() === month && new Date(selectedValue + 'T00:00:00').getFullYear() === year;
+        const today = new Date();
+        const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+
+        let dayClasses = `p-2 rounded-lg text-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition`;
+        if (isSelected) {
+          dayClasses = `p-2 rounded-lg text-center cursor-pointer bg-accent-rose text-white`;
+        } else if (isToday) {
+          dayClasses = `p-2 rounded-lg text-center cursor-pointer font-bold border-2 border-accent-rose text-accent-rose dark:text-gray-400`;
+        }
+
+        html += `<div class="${dayClasses}" onclick="selectDate(${year}, ${month}, ${day}, '${pickerId}')">${day}</div>`;
+      }
+      html += `</div>`;
+      $(pickerId.replace('Picker', 'Calendar')).innerHTML = html;
+    }
+
+    function changeMonth(direction, pickerId) {
+      selectedDate.setMonth(selectedDate.getMonth() + direction);
+      renderCalendar(pickerId);
+    }
+
+    function selectDate(year, month, day, pickerId) {
+      const newDate = new Date(year, month, day);
+      const formattedDate = newDate.getFullYear() + '-' + pad(newDate.getMonth() + 1) + '-' + pad(newDate.getDate());
+      const inputId = pickerId.replace('Picker', '');
+      
+      const hiddenInput = $(inputId);
+      const displaySpan = $(inputId + 'Value');
+
+      if (hiddenInput && displaySpan) {
+        hiddenInput.value = formattedDate;
+        displaySpan.textContent = formattedDate;
+      }
+      $(pickerId).style.display = 'none';
+      activePickerId = null;
+    }
+
+    // ===== Date Helpers =====
+    function daysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
+
+    function diffYMD(a, b) {
+      let y = b.getFullYear() - a.getFullYear();
+      let m = b.getMonth() - a.getMonth();
+      let d = b.getDate() - a.getDate();
+
+      if (d < 0) {
+        m -= 1;
+        d += daysInMonth(b.getFullYear(), (b.getMonth() + 11) % 12);
+      }
+      if (m < 0) {
+        y -= 1;
+        m += 12;
+      }
+      return { years: y, months: m, days: d };
+    }
+
+    function toDate(value) {
+      if (!value) return null;
+      const t = new Date(value + 'T00:00:00');
+      return isNaN(t.getTime()) ? null : t;
+    }
+
+    // ===== Age Calculator =====
+    function calculateAge() {
+      const dob = toDate($('dob').value);
+      if (!dob) {
+        $('ageResult').innerHTML = `<span class="text-red-600 dark:text-red-400">Please select a valid date of birth.</span>`;
+        return;
+      }
+      const today = new Date();
+      const older = dob <= today ? dob : today;
+      const newer = dob <= today ? today : dob;
+      const sign = dob <= today ? 1 : -1;
+
+      const ymd = diffYMD(older, newer);
+      const years = ymd.years * sign, months = ymd.months * sign, days = ymd.days * sign;
+
+      let nextBdayTxt = '';
+      if (sign === 1) {
+        const thisYearBday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+        const nextBday = (thisYearBday >= today) ? thisYearBday : new Date(today.getFullYear() + 1, dob.getMonth(), dob.getDate());
+        
+        const startOfDayToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const deltaDays = Math.ceil((nextBday - startOfDayToday) / (1000 * 60 * 60 * 24));
+        
+        nextBdayTxt = `<div class="mt-2">🎂 Next birthday in <strong>${deltaDays}</strong> day${deltaDays===1?'':'s'} (${nextBday.getFullYear()}-${pad(nextBday.getMonth()+1)}-${pad(nextBday.getDate())}).</div>`;
+      }
+
+      $('ageResult').innerHTML = `
+        <div class="text-center">
+          <div class="text-3xl font-extrabold accent-rose">${Math.abs(ymd.years)}</div>
+          <div class="font-medium mb-3">${sign === 1 ? 'years old' : 'years until birth date'}</div>
+          <div class="text-sm">Exact: <strong>${Math.abs(years)}</strong> years, <strong>${Math.abs(months)}</strong> months, <strong>${Math.abs(days)}</strong> days</div>
+          ${nextBdayTxt}
+        </div>
+      `;
+    }
+
+    // ===== Date Difference =====
+    function calculateDifference() {
+      const d1 = toDate($('date1').value);
+      const d2 = toDate($('date2').value);
+      if (!d1 || !d2) {
+        $('diffResult').innerHTML = `<span class="text-red-600 dark:text-red-400">Please select both dates.</span>`;
+        return;
+      }
+      let a = d1, b = d2, forward = true;
+      if (a > b) { [a, b] = [b, a]; forward = false; }
+
+      const totalDays = Math.round((b - a) / (1000 * 60 * 60 * 24));
+      const totalWeeks = Math.floor(totalDays / 7);
+      const ymd = diffYMD(a, b);
+
+      $('diffResult').innerHTML = `
+        <div class="space-y-1">
+          <div><strong>${totalDays}</strong> day${totalDays===1?'':'s'} (${totalWeeks} week${totalWeeks===1?'':'s'} + ${totalDays % 7} day${(totalDays%7)===1?'':'s'})</div>
+          <div>Calendar difference: <strong>${ymd.years}</strong> year(s), <strong>${ymd.months}</strong> month(s), <strong>${ymd.days}</strong> day(s)</div>
+          <div class="text-xs text-gray-500">${forward ? 'From earlier to later date.' : 'From later to earlier date (absolute shown above).'}</div>
+        </div>
+      `;
+    }
+
+    // ===== FAQ Dropdown Logic =====
+    function toggleFaq(button) {
+      const faqItem = button.closest('.faq-item');
+      faqItem.classList.toggle('active');
+    }
+  </script>
+</body>
+</html>
